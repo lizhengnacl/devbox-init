@@ -5,6 +5,37 @@ set -e
 echo "开始初始化项目..."
 
 echo ""
+echo "配置代理环境变量..."
+
+PROXY_CONFIG=$(cat << 'EOF'
+
+# Proxy configuration
+export http_proxy=http://sys-proxy-rd-relay.byted.org:8118
+export https_proxy=http://sys-proxy-rd-relay.byted.org:8118
+export no_proxy=.byted.org
+EOF
+)
+
+BASHRC_FILE="$HOME/.bashrc"
+if ! grep -q "# Proxy configuration" "$BASHRC_FILE"; then
+    echo "$PROXY_CONFIG" >> "$BASHRC_FILE"
+    echo "已添加代理配置到 $BASHRC_FILE"
+    source "$BASHRC_FILE"
+else
+    echo "代理配置在 $BASHRC_FILE 中已存在，跳过"
+fi
+
+ZSHRC_FILE="$HOME/.zshrc"
+if [ -f "$ZSHRC_FILE" ] && ! grep -q "# Proxy configuration" "$ZSHRC_FILE"; then
+    echo "$PROXY_CONFIG" >> "$ZSHRC_FILE"
+    echo "已添加代理配置到 $ZSHRC_FILE"
+else
+    if [ -f "$ZSHRC_FILE" ]; then
+        echo "代理配置在 $ZSHRC_FILE 中已存在，跳过"
+    fi
+fi
+
+echo ""
 echo "检查和安装zsh..."
 
 if ! command -v zsh &> /dev/null; then
@@ -77,37 +108,6 @@ add_alias_if_not_exists "scdr" "screen -d -r"
 
 echo "screen常用命令alias配置完成"
 echo "请运行 'source $ALIAS_FILE' 来立即生效，或重新登录shell"
-
-echo ""
-echo "配置代理环境变量..."
-
-PROXY_CONFIG=$(cat << 'EOF'
-
-# Proxy configuration
-export http_proxy=http://sys-proxy-rd-relay.byted.org:8118
-export https_proxy=http://sys-proxy-rd-relay.byted.org:8118
-export no_proxy=.byted.org
-EOF
-)
-
-BASHRC_FILE="$HOME/.bashrc"
-if ! grep -q "# Proxy configuration" "$BASHRC_FILE"; then
-    echo "$PROXY_CONFIG" >> "$BASHRC_FILE"
-    echo "已添加代理配置到 $BASHRC_FILE"
-    source "$BASHRC_FILE"
-else
-    echo "代理配置在 $BASHRC_FILE 中已存在，跳过"
-fi
-
-ZSHRC_FILE="$HOME/.zshrc"
-if [ -f "$ZSHRC_FILE" ] && ! grep -q "# Proxy configuration" "$ZSHRC_FILE"; then
-    echo "$PROXY_CONFIG" >> "$ZSHRC_FILE"
-    echo "已添加代理配置到 $ZSHRC_FILE"
-else
-    if [ -f "$ZSHRC_FILE" ]; then
-        echo "代理配置在 $ZSHRC_FILE 中已存在，跳过"
-    fi
-fi
 
 echo ""
 echo "生成SSH密钥..."
