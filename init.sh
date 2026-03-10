@@ -25,16 +25,6 @@ else
     echo "代理配置在 $BASHRC_FILE 中已存在，跳过"
 fi
 
-ZSHRC_FILE="$HOME/.zshrc"
-if [ -f "$ZSHRC_FILE" ] && ! grep -q "# Proxy configuration" "$ZSHRC_FILE"; then
-    echo "$PROXY_CONFIG" >> "$ZSHRC_FILE"
-    echo "已添加代理配置到 $ZSHRC_FILE"
-else
-    if [ -f "$ZSHRC_FILE" ]; then
-        echo "代理配置在 $ZSHRC_FILE 中已存在，跳过"
-    fi
-fi
-
 echo ""
 echo "检查和安装zsh..."
 
@@ -72,6 +62,37 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo "oh-my-zsh安装完成"
 else
     echo "oh-my-zsh已安装"
+fi
+
+ZSHRC_FILE="$HOME/.zshrc"
+
+echo ""
+echo "将zsh设置为默认shell..."
+
+CURRENT_SHELL=$(basename "$SHELL")
+if [ "$CURRENT_SHELL" != "zsh" ]; then
+    ZSH_PATH=$(command -v zsh)
+    if grep -q "$ZSH_PATH" /etc/shells; then
+        echo "正在将zsh设置为默认shell..."
+        chsh -s "$ZSH_PATH"
+        echo "zsh已设置为默认shell，请重新登录或重启终端使其生效"
+    else
+        echo "警告：$ZSH_PATH 不在 /etc/shells 中，无法设置为默认shell"
+        echo "请手动运行: sudo echo $ZSH_PATH >> /etc/shells"
+        echo "然后运行: chsh -s $ZSH_PATH"
+    fi
+else
+    echo "zsh已经是默认shell"
+fi
+
+echo ""
+echo "配置zsh环境变量..."
+
+if ! grep -q "# Proxy configuration" "$ZSHRC_FILE"; then
+    echo "$PROXY_CONFIG" >> "$ZSHRC_FILE"
+    echo "已添加代理配置到 $ZSHRC_FILE"
+else
+    echo "代理配置在 $ZSHRC_FILE 中已存在，跳过"
 fi
 
 echo ""
@@ -170,13 +191,11 @@ else
     fi
 fi
 
-if [ -f "$ZSHRC_FILE" ] && ! grep -q "# NVM auto load configuration" "$ZSHRC_FILE"; then
+if ! grep -q "# NVM auto load configuration" "$ZSHRC_FILE"; then
     echo "$NVM_AUTOLOAD_CONFIG" >> "$ZSHRC_FILE"
     echo "已添加nvm自动加载配置到 $ZSHRC_FILE"
 else
-    if [ -f "$ZSHRC_FILE" ]; then
-        echo "nvm自动加载配置在 $ZSHRC_FILE 中已存在，跳过"
-    fi
+    echo "nvm自动加载配置在 $ZSHRC_FILE 中已存在，跳过"
 fi
 
 echo ""
@@ -258,13 +277,11 @@ else
     echo "Git SSH配置在 $BASHRC_FILE 中已存在，跳过"
 fi
 
-if [ -f "$ZSHRC_FILE" ] && ! grep -q "# Git SSH configuration" "$ZSHRC_FILE"; then
+if ! grep -q "# Git SSH configuration" "$ZSHRC_FILE"; then
     echo "$SSH_CONFIG" >> "$ZSHRC_FILE"
     echo "已添加Git SSH配置到 $ZSHRC_FILE"
 else
-    if [ -f "$ZSHRC_FILE" ]; then
-        echo "Git SSH配置在 $ZSHRC_FILE 中已存在，跳过"
-    fi
+    echo "Git SSH配置在 $ZSHRC_FILE 中已存在，跳过"
 fi
 
 echo "正在立即生效Git SSH配置..."
@@ -277,4 +294,9 @@ if [ -f ~/.ssh/id_gitlab ]; then
 fi
 echo "Git SSH配置已生效"
 
+echo ""
 echo "项目初始化完成！"
+echo ""
+echo "重要提示："
+echo "1. 如果zsh刚刚被设置为默认shell，请重新登录或重启终端使其完全生效"
+echo "2. 您可以运行 'source ~/.zshrc' 来立即加载所有配置"
