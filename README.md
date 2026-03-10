@@ -130,7 +130,14 @@ bash init.sh
 - 自动安装Oh My Zsh框架
 - 支持macOS和Linux系统
 
-### 3. Screen命令Alias配置
+### 3. NVM和Node.js安装
+- 自动检测并安装nvm (Node Version Manager)
+- 自动安装最新LTS版本的Node.js
+- 自动配置npm
+- 显示Node.js和npm版本信息
+- 配置nvm自动加载：切换目录时自动读取并使用.nvmrc中的Node.js版本
+
+### 4. Screen命令Alias配置
 - 配置常用screen命令快捷方式
 - 智能检测已存在的alias
 
@@ -141,7 +148,7 @@ bash init.sh
 - `scd` → `screen -d`
 - `scdr` → `screen -d -r`
 
-### 4. SSH密钥生成
+### 5. SSH密钥生成
 - 自动生成GitHub和GitLab SSH密钥
 - 使用ed25519算法（更安全高效）
 - 自动显示公钥内容
@@ -150,7 +157,7 @@ bash init.sh
 - `~/.ssh/id_github` - GitHub专用密钥
 - `~/.ssh/id_gitlab` - GitLab专用密钥
 
-### 5. Git SSH配置
+### 6. Git SSH配置
 - 自动配置ssh-agent
 - 自动添加SSH密钥
 - 同时支持bash和zsh配置
@@ -167,9 +174,10 @@ bash init.sh
 1. 配置代理环境变量
 2. 检查和安装zsh
 3. 检查和安装oh-my-zsh
-4. 配置screen常用命令alias
-5. 生成SSH密钥
-6. 配置Git SSH
+4. 检查和安装nvm及Node.js
+5. 配置screen常用命令alias
+6. 生成SSH密钥
+7. 配置Git SSH
 
 ## 注意事项
 

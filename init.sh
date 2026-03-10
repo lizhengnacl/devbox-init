@@ -75,6 +75,113 @@ else
 fi
 
 echo ""
+echo "检查和安装nvm..."
+
+if [ ! -d "$HOME/.nvm" ]; then
+    echo "nvm未安装，正在安装..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh)"
+    echo "nvm安装完成"
+    
+    echo "正在加载nvm..."
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    
+    echo "正在安装最新LTS版本的Node.js..."
+    nvm install --lts
+    nvm use --lts
+    echo "Node.js安装完成"
+    echo "Node.js版本: $(node --version)"
+    echo "npm版本: $(npm --version)"
+else
+    echo "nvm已安装"
+    
+    if [ -s "$NVM_DIR/nvm.sh" ]; then
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    fi
+    
+    if ! command -v node &> /dev/null; then
+        echo "Node.js未安装，正在安装最新LTS版本..."
+        nvm install --lts
+        nvm use --lts
+        echo "Node.js安装完成"
+        echo "Node.js版本: $(node --version)"
+        echo "npm版本: $(npm --version)"
+    else
+        echo "Node.js已安装: $(node --version)"
+    fi
+fi
+
+echo ""
+echo "配置nvm自动加载..."
+
+NVM_AUTOLOAD_CONFIG=$(cat << 'EOF'
+
+# NVM auto load configuration
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Auto load .nvmrc when changing directory
+autoload -U add-zsh-hook
+load-nvmrc() {
+  local node_version="$(nvm version)"
+  local nvmrc_path="$(nvm_find_nvmrc)"
+
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$node_version" ]; then
+      nvm use
+    fi
+  elif [ "$node_version" != "$(nvm version default)" ]; then
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
+EOF
+)
+
+BASH_NVM_CONFIG=$(cat << 'EOF'
+
+# NVM auto load configuration
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Auto load .nvmrc when changing directory
+cd() {
+  builtin cd "$@" || return
+  if [ -f ".nvmrc" ]; then
+    nvm use
+  fi
+}
+EOF
+)
+
+if [ -f "$BASHRC_FILE" ] && ! grep -q "# NVM auto load configuration" "$BASHRC_FILE"; then
+    echo "$BASH_NVM_CONFIG" >> "$BASHRC_FILE"
+    echo "已添加nvm自动加载配置到 $BASHRC_FILE"
+else
+    if [ -f "$BASHRC_FILE" ]; then
+        echo "nvm自动加载配置在 $BASHRC_FILE 中已存在，跳过"
+    fi
+fi
+
+if [ -f "$ZSHRC_FILE" ] && ! grep -q "# NVM auto load configuration" "$ZSHRC_FILE"; then
+    echo "$NVM_AUTOLOAD_CONFIG" >> "$ZSHRC_FILE"
+    echo "已添加nvm自动加载配置到 $ZSHRC_FILE"
+else
+    if [ -f "$ZSHRC_FILE" ]; then
+        echo "nvm自动加载配置在 $ZSHRC_FILE 中已存在，跳过"
+    fi
+fi
+
+echo ""
 echo "配置screen常用命令alias..."
 
 ALIAS_FILE="$HOME/.bash_aliases"
