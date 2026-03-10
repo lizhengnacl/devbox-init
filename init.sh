@@ -71,29 +71,6 @@ echo "zsh 安装完成！"
 echo ""
 echo "💡 您现在可以立即使用 zsh 了！"
 echo "   运行: zsh"
-echo ""
-echo "是否要将 zsh 设置为默认 shell？"
-echo "(设置后每次打开终端都会自动使用 zsh，需要输入密码)"
-
-CURRENT_SHELL=$(basename "$SHELL")
-if [ "$CURRENT_SHELL" != "zsh" ]; then
-    ZSH_PATH=$(command -v zsh)
-    if grep -q "$ZSH_PATH" /etc/shells; then
-        echo ""
-        echo "如果您想设置默认 shell，请手动运行："
-        echo "  chsh -s $ZSH_PATH"
-        echo ""
-        echo "或者稍后再运行，现在先继续安装..."
-    else
-        echo ""
-        echo "注意：$ZSH_PATH 不在 /etc/shells 中"
-        echo "如果需要设置默认 shell，请先运行："
-        echo "  sudo sh -c 'echo $ZSH_PATH >> /etc/shells'"
-        echo "  chsh -s $ZSH_PATH"
-    fi
-else
-    echo "✓ zsh 已经是默认 shell"
-fi
 
 echo ""
 echo "配置zsh环境变量..."
@@ -244,6 +221,33 @@ echo "screen常用命令alias配置完成"
 echo "请运行 'source $ALIAS_FILE' 来立即生效，或重新登录shell"
 
 echo ""
+echo "配置自动切换到zsh..."
+
+AUTO_SWITCH_CONFIG=$(cat << 'EOF'
+
+# Auto switch to zsh
+if command -v zsh &> /dev/null && [ -z "$ZSH_VERSION" ]; then
+    exec zsh
+fi
+EOF
+)
+
+if [ -f "$BASHRC_FILE" ] && ! grep -q "# Auto switch to zsh" "$BASHRC_FILE"; then
+    echo "$AUTO_SWITCH_CONFIG" >> "$BASHRC_FILE"
+    echo "已添加自动切换到zsh配置到 $BASHRC_FILE"
+else
+    if [ -f "$BASHRC_FILE" ]; then
+        echo "自动切换到zsh配置在 $BASHRC_FILE 中已存在，跳过"
+    fi
+fi
+
+BASH_PROFILE="$HOME/.bash_profile"
+if [ -f "$BASH_PROFILE" ] && ! grep -q "# Auto switch to zsh" "$BASH_PROFILE"; then
+    echo "$AUTO_SWITCH_CONFIG" >> "$BASH_PROFILE"
+    echo "已添加自动切换到zsh配置到 $BASH_PROFILE"
+fi
+
+echo ""
 echo "生成SSH密钥..."
 
 generate_ssh_key() {
@@ -307,15 +311,9 @@ echo "Git SSH配置已生效"
 echo ""
 echo "项目初始化完成！"
 echo ""
-echo "重要提示："
-echo "1. 要立即使用 zsh 和 oh-my-zsh，请运行："
-echo "   zsh"
-echo ""
-echo "2. 如果已经在 zsh 中，请运行："
-echo "   source ~/.zshrc"
-echo ""
-echo "3. 如果 zsh 刚刚被设置为默认shell，建议重新登录或重启终端"
-echo "   这样每次打开新终端都会自动使用 zsh"
+echo "💡 已配置自动切换到 zsh！"
+echo "   下次打开新终端时会自动进入 zsh"
+echo "   现在可以运行 'source ~/.bashrc' 立即生效"
 echo ""
 echo "尝试自动加载 zsh 配置..."
 if command -v zsh &> /dev/null && [ -f "$ZSHRC_FILE" ]; then
