@@ -73,13 +73,20 @@ CURRENT_SHELL=$(basename "$SHELL")
 if [ "$CURRENT_SHELL" != "zsh" ]; then
     ZSH_PATH=$(command -v zsh)
     if grep -q "$ZSH_PATH" /etc/shells; then
-        echo "正在将zsh设置为默认shell..."
-        chsh -s "$ZSH_PATH"
-        echo "zsh已设置为默认shell"
+        echo "注意：设置默认shell需要输入您的用户密码"
+        echo "正在运行: chsh -s $ZSH_PATH"
+        if chsh -s "$ZSH_PATH"; then
+            echo "✓ zsh已设置为默认shell"
+            echo "  请重新登录或重启终端后生效"
+        else
+            echo "✗ 设置默认shell失败"
+            echo "  您可以稍后手动运行: chsh -s $ZSH_PATH"
+        fi
     else
         echo "警告：$ZSH_PATH 不在 /etc/shells 中，无法设置为默认shell"
-        echo "请手动运行: sudo echo $ZSH_PATH >> /etc/shells"
-        echo "然后运行: chsh -s $ZSH_PATH"
+        echo "请手动运行:"
+        echo "  sudo sh -c 'echo $ZSH_PATH >> /etc/shells'"
+        echo "  chsh -s $ZSH_PATH"
     fi
 else
     echo "zsh已经是默认shell"
