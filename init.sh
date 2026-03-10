@@ -77,13 +77,14 @@ fi
 echo ""
 echo "检查和安装nvm..."
 
-if [ ! -d "$HOME/.nvm" ]; then
+export NVM_DIR="$HOME/.nvm"
+
+if [ ! -d "$NVM_DIR" ]; then
     echo "nvm未安装，正在安装..."
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
     echo "nvm安装完成"
     
     echo "正在加载nvm..."
-    export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
     
@@ -96,10 +97,7 @@ if [ ! -d "$HOME/.nvm" ]; then
 else
     echo "nvm已安装"
     
-    if [ -s "$NVM_DIR/nvm.sh" ]; then
-        export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    fi
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     
     if ! command -v node &> /dev/null; then
         echo "Node.js未安装，正在安装最新LTS版本..."
