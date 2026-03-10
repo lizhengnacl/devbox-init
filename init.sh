@@ -79,7 +79,7 @@ echo "检查和安装nvm..."
 
 if [ ! -d "$HOME/.nvm" ]; then
     echo "nvm未安装，正在安装..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh)"
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
     echo "nvm安装完成"
     
     echo "正在加载nvm..."
