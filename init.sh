@@ -67,29 +67,32 @@ fi
 ZSHRC_FILE="$HOME/.zshrc"
 
 echo ""
-echo "将zsh设置为默认shell..."
+echo "zsh 安装完成！"
+echo ""
+echo "💡 您现在可以立即使用 zsh 了！"
+echo "   运行: zsh"
+echo ""
+echo "是否要将 zsh 设置为默认 shell？"
+echo "(设置后每次打开终端都会自动使用 zsh，需要输入密码)"
 
 CURRENT_SHELL=$(basename "$SHELL")
 if [ "$CURRENT_SHELL" != "zsh" ]; then
     ZSH_PATH=$(command -v zsh)
     if grep -q "$ZSH_PATH" /etc/shells; then
-        echo "注意：设置默认shell需要输入您的用户密码"
-        echo "正在运行: chsh -s $ZSH_PATH"
-        if chsh -s "$ZSH_PATH"; then
-            echo "✓ zsh已设置为默认shell"
-            echo "  请重新登录或重启终端后生效"
-        else
-            echo "✗ 设置默认shell失败"
-            echo "  您可以稍后手动运行: chsh -s $ZSH_PATH"
-        fi
+        echo ""
+        echo "如果您想设置默认 shell，请手动运行："
+        echo "  chsh -s $ZSH_PATH"
+        echo ""
+        echo "或者稍后再运行，现在先继续安装..."
     else
-        echo "警告：$ZSH_PATH 不在 /etc/shells 中，无法设置为默认shell"
-        echo "请手动运行:"
+        echo ""
+        echo "注意：$ZSH_PATH 不在 /etc/shells 中"
+        echo "如果需要设置默认 shell，请先运行："
         echo "  sudo sh -c 'echo $ZSH_PATH >> /etc/shells'"
         echo "  chsh -s $ZSH_PATH"
     fi
 else
-    echo "zsh已经是默认shell"
+    echo "✓ zsh 已经是默认 shell"
 fi
 
 echo ""
