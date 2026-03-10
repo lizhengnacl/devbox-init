@@ -58,8 +58,15 @@ echo "检查和安装oh-my-zsh..."
 
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo "oh-my-zsh未安装，正在安装..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    echo "oh-my-zsh安装完成"
+    if ! sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; then
+        echo "GitHub安装失败，尝试备用镜像..."
+        sh -c "$(curl -fsSL https://install.ohmyz.sh/)" "" --unattended
+    fi
+    if [ -d "$HOME/.oh-my-zsh" ]; then
+        echo "oh-my-zsh安装完成"
+    else
+        echo "oh-my-zsh安装失败，请检查网络连接"
+    fi
 else
     echo "oh-my-zsh已安装"
 fi
