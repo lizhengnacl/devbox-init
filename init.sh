@@ -75,7 +75,7 @@ if [ "$CURRENT_SHELL" != "zsh" ]; then
     if grep -q "$ZSH_PATH" /etc/shells; then
         echo "正在将zsh设置为默认shell..."
         chsh -s "$ZSH_PATH"
-        echo "zsh已设置为默认shell，请重新登录或重启终端使其生效"
+        echo "zsh已设置为默认shell"
     else
         echo "警告：$ZSH_PATH 不在 /etc/shells 中，无法设置为默认shell"
         echo "请手动运行: sudo echo $ZSH_PATH >> /etc/shells"
@@ -298,5 +298,17 @@ echo ""
 echo "项目初始化完成！"
 echo ""
 echo "重要提示："
-echo "1. 如果zsh刚刚被设置为默认shell，请重新登录或重启终端使其完全生效"
-echo "2. 您可以运行 'source ~/.zshrc' 来立即加载所有配置"
+echo "1. 要立即使用 zsh 和 oh-my-zsh，请运行："
+echo "   zsh"
+echo ""
+echo "2. 如果已经在 zsh 中，请运行："
+echo "   source ~/.zshrc"
+echo ""
+echo "3. 如果 zsh 刚刚被设置为默认shell，建议重新登录或重启终端"
+echo "   这样每次打开新终端都会自动使用 zsh"
+echo ""
+echo "尝试自动加载 zsh 配置..."
+if command -v zsh &> /dev/null && [ -f "$ZSHRC_FILE" ]; then
+    zsh -c "source $ZSHRC_FILE 2>/dev/null || true"
+    echo "zsh 配置已准备就绪"
+fi
