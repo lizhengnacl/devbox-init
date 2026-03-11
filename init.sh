@@ -276,8 +276,8 @@ generate_ssh_key() {
     fi
 }
 
-generate_ssh_key "id_github" "github@$(hostname)"
-generate_ssh_key "id_gitlab" "gitlab@$(hostname)"
+generate_ssh_key "id_github" "lizhengnacl@163.com"
+generate_ssh_key "id_gitlab" "lizheng.626@bytedance.com"
 
 echo ""
 echo "配置Git SSH..."
